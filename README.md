@@ -1,6 +1,6 @@
 # Baseball App Intelligence Web
 
-**Prod:** <https://baseball.bernsonllc.com> | **Dev:** <https://baseball-dev.bernsonllc.com>
+**Prod:** <https://baseball-app.bernsonllc.com> | **Dev:** <https://baseball-app-dev.bernsonllc.com>
 
 React SPA for Baseball App Intelligence — interactive baseball scenario quizzes.
 
@@ -61,5 +61,5 @@ Automated via GitHub Actions — push to `main` builds and deploys to S3 + inval
 | `COGNITO_DOMAIN` | From infra `terraform output cognito_domain` |
 | `COGNITO_CLIENT_ID` | From infra `terraform output cognito_client_id` |
 | `COGNITO_USER_POOL_ID` | From infra `terraform output cognito_user_pool_id` |
-| `COGNITO_REDIRECT_URI` | e.g. `https://baseball.bernsonllc.com/auth/callback` |
-| `COGNITO_LOGOUT_URI` | e.g. `https://baseball.bernsonllc.com` |
+| `COGNITO_REDIRECT_URI` | e.g. `https://baseball-app.bernsonllc.com/auth/callback` |
+| `COGNITO_LOGOUT_URI` | e.g. `https://baseball-app.bernsonllc.com` |

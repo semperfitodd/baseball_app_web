@@ -4,7 +4,6 @@ Thumbs.db
 
 .env
 .env.*
-*.tfvars
 Secrets.swift
 
 node_modules/

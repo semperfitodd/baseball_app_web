@@ -13,19 +13,8 @@ import {
   refreshTokens,
   verifyIdToken,
 } from "@/config/cognito";
+import { SESSION_KEYS, TOKEN_KEYS } from "@/config/storage-keys";
 import type { UserInfo } from "@/types";
-
-const TOKEN_KEYS = {
-  ID: "cognito_id_token",
-  ACCESS: "cognito_access_token",
-  REFRESH: "cognito_refresh_token",
-} as const;
-
-const SESSION_KEYS = {
-  CODE_VERIFIER: "pkce_code_verifier",
-  STATE: "oauth_state",
-  NONCE: "oidc_nonce",
-} as const;
 
 interface AuthContextValue {
   user: UserInfo | null;
@@ -33,6 +22,7 @@ interface AuthContextValue {
   authenticated: boolean;
   login: () => Promise<void>;
   logout: () => void;
+  handleTokens: (idToken: string, accessToken: string, refreshToken?: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null as AuthContextValue | null);
@@ -146,6 +136,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     window.location.href = getLoginUrl(codeChallenge, state, nonce);
   }, []);
 
+  const handleTokens = useCallback(async (idToken: string, accessToken: string, refreshToken?: string) => {
+    localStorage.setItem(TOKEN_KEYS.ID, idToken);
+    localStorage.setItem(TOKEN_KEYS.ACCESS, accessToken);
+    if (refreshToken) {
+      localStorage.setItem(TOKEN_KEYS.REFRESH, refreshToken);
+    }
+
+    const userInfo = parseIdToken(idToken);
+    setUser(userInfo);
+    scheduleRefresh(idToken);
+  }, [scheduleRefresh]);
+
   const logout = useCallback(() => {
     clearTokens();
     window.location.href = getLogoutUrl();
@@ -158,6 +160,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       authenticated: !!user,
       login,
       logout,
+      handleTokens,
     }}>
       {children}
     </AuthContext>

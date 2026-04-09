@@ -3,22 +3,13 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { exchangeCodeForTokens, verifyIdToken } from "@/config/cognito";
-
-const SESSION_KEYS = {
-  CODE_VERIFIER: "pkce_code_verifier",
-  STATE: "oauth_state",
-  NONCE: "oidc_nonce",
-} as const;
-
-const TOKEN_KEYS = {
-  ID: "cognito_id_token",
-  ACCESS: "cognito_access_token",
-  REFRESH: "cognito_refresh_token",
-} as const;
+import { SESSION_KEYS } from "@/config/storage-keys";
+import { useAuth } from "@/contexts/auth-context";
 
 export function AuthCallback() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const { handleTokens } = useAuth();
   const [error, setError] = useState<string | null>(null);
   const processed = useRef(false);
 
@@ -60,11 +51,7 @@ export function AuthCallback() {
 
         await verifyIdToken(tokens.id_token, nonce ?? undefined);
 
-        localStorage.setItem(TOKEN_KEYS.ID, tokens.id_token);
-        localStorage.setItem(TOKEN_KEYS.ACCESS, tokens.access_token);
-        if (tokens.refresh_token) {
-          localStorage.setItem(TOKEN_KEYS.REFRESH, tokens.refresh_token);
-        }
+        await handleTokens(tokens.id_token, tokens.access_token, tokens.refresh_token);
 
         sessionStorage.removeItem(SESSION_KEYS.CODE_VERIFIER);
         sessionStorage.removeItem(SESSION_KEYS.STATE);
@@ -77,7 +64,7 @@ export function AuthCallback() {
     }
 
     handleCallback();
-  }, [searchParams, navigate]);
+  }, [searchParams, navigate, handleTokens]);
 
   if (error) {
     return (

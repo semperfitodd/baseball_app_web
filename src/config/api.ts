@@ -1,4 +1,4 @@
-const TOKEN_KEY = "cognito_id_token";
+import { TOKEN_KEYS } from "@/config/storage-keys";
 
 export class ApiError extends Error {
   constructor(
@@ -11,7 +11,7 @@ export class ApiError extends Error {
 }
 
 function getToken(): string | null {
-  return localStorage.getItem(TOKEN_KEY);
+  return localStorage.getItem(TOKEN_KEYS.ID);
 }
 
 async function request<T>(path: string, options: RequestInit = {}): Promise<T> {

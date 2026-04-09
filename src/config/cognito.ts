@@ -158,35 +158,34 @@ export async function verifyIdToken(token: string, nonce?: string): Promise<User
   };
 }
 
-export function parseIdToken(token: string): UserInfo {
+function decodeJwtPayload(token: string): Record<string, unknown> | null {
   const parts = token.split(".");
-  if (parts.length !== 3) throw new Error("Invalid JWT format");
+  if (parts.length !== 3) return null;
+  return JSON.parse(base64urlDecode(parts[1]));
+}
 
-  const payload = JSON.parse(base64urlDecode(parts[1]));
+export function parseIdToken(token: string): UserInfo {
+  const payload = decodeJwtPayload(token);
+  if (!payload) throw new Error("Invalid JWT format");
+
   return {
-    sub: payload.sub ?? "",
-    email: payload.email ?? "",
-    name: payload.name ?? "",
-    givenName: payload.given_name ?? "",
-    picture: payload.picture,
+    sub: (payload.sub as string) ?? "",
+    email: (payload.email as string) ?? "",
+    name: (payload.name as string) ?? "",
+    givenName: (payload.given_name as string) ?? "",
+    picture: payload.picture as string | undefined,
   };
 }
 
 export function isTokenExpired(token: string): boolean {
-  const parts = token.split(".");
-  if (parts.length !== 3) return true;
-
-  const payload = JSON.parse(base64urlDecode(parts[1]));
-  if (!payload.exp) return true;
+  const payload = decodeJwtPayload(token);
+  if (!payload?.exp) return true;
 
   const bufferSeconds = 5 * 60;
-  return Date.now() / 1000 >= payload.exp - bufferSeconds;
+  return Date.now() / 1000 >= (payload.exp as number) - bufferSeconds;
 }
 
 export function getTokenExpiration(token: string): number | null {
-  const parts = token.split(".");
-  if (parts.length !== 3) return null;
-
-  const payload = JSON.parse(base64urlDecode(parts[1]));
-  return payload.exp ?? null;
+  const payload = decodeJwtPayload(token);
+  return (payload?.exp as number) ?? null;
 }

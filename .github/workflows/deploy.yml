@@ -1,0 +1,65 @@
+name: Deploy
+
+on:
+  pull_request:
+    branches: [main, dev]
+  push:
+    branches: [main, dev]
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  validate:
+    name: Validate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+      - run: npm run lint
+      - run: npm test
+      - run: npm run build
+
+  deploy:
+    if: github.event_name == 'push'
+    needs: validate
+    name: Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+      - run: npm run build
+        env:
+          VITE_COGNITO_DOMAIN: ${{ vars.COGNITO_DOMAIN }}
+          VITE_COGNITO_CLIENT_ID: ${{ vars.COGNITO_CLIENT_ID }}
+          VITE_COGNITO_USER_POOL_ID: ${{ vars.COGNITO_USER_POOL_ID }}
+          VITE_COGNITO_REDIRECT_URI: ${{ vars.COGNITO_REDIRECT_URI }}
+          VITE_COGNITO_LOGOUT_URI: ${{ vars.COGNITO_LOGOUT_URI }}
+          VITE_AWS_REGION: ${{ vars.AWS_REGION }}
+
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.GHA_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Deploy to S3
+        run: aws s3 sync dist/ s3://${{ vars.S3_BUCKET }} --delete
+
+      - name: Invalidate CloudFront
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id ${{ vars.CF_DISTRIBUTION_ID }} \
+            --paths "/*"

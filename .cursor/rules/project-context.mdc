@@ -1,0 +1,45 @@
+---
+description: Baseball App Web context
+alwaysApply: true
+---
+
+# Baseball App Web
+
+## Workspace
+
+This is the `baseball_app_web` repo — one of 4 repos under the Baseball App Intelligence workspace.
+
+## Stack
+
+- **Framework:** React 19, TypeScript (strict), Vite 6
+- **Routing:** React Router 7 (data router via `createBrowserRouter`)
+- **Data fetching:** TanStack Query v5
+- **Styling:** Tailwind CSS v4 (`@tailwindcss/vite`)
+- **Auth:** Cognito OAuth2 PKCE with `jose` for JWT verification
+- **Testing:** Vitest + React Testing Library
+
+## Architecture
+
+- `config/` — Environment config, Cognito PKCE, API client, query client
+- `contexts/` — Auth context (token management, login/logout)
+- `components/layout/` — Header, AuthGuard, MobileBottomNav
+- `components/ui/` — Reusable UI primitives (Button, Card, Badge, etc.)
+- `components/scenario/` — ScenarioCard, OptionButton, ExplanationPanel
+- `components/stats/` — StatsOverview, LeaderboardTable, StreakDisplay
+- `hooks/` — TanStack Query hooks (centralized query keys in queries.ts)
+- `pages/` — Route components (Home, Play, Progress, Leaderboard, Profile)
+- `types/` — Shared TypeScript interfaces (mirrors backend types)
+
+## Auth Flow
+
+1. Login generates PKCE verifier/challenge + state + nonce, stores in sessionStorage
+2. AuthCallback exchanges code for tokens, verifies ID token with jose, stores in localStorage
+3. AuthGuard checks token validity, refreshes if near expiry
+4. api.ts attaches Bearer token to all API calls
+
+## Conventions
+
+- Query keys centralized in `hooks/queries.ts`
+- All API calls go through `config/api.ts`
+- Mobile breakpoint at 768px, min-height 44px for touch targets
+- Tailwind responsive utilities for layout shifts

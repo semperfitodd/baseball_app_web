@@ -12,8 +12,9 @@ let cached: PortalConfig | null = null;
 export function getPortalConfig(): PortalConfig {
   if (cached) return cached;
 
+  const rawDomain: string = import.meta.env.VITE_COGNITO_DOMAIN ?? "";
   const config: PortalConfig = {
-    COGNITO_DOMAIN: import.meta.env.VITE_COGNITO_DOMAIN ?? "",
+    COGNITO_DOMAIN: rawDomain.startsWith("https://") ? rawDomain : `https://${rawDomain}`,
     COGNITO_CLIENT_ID: import.meta.env.VITE_COGNITO_CLIENT_ID ?? "",
     COGNITO_USER_POOL_ID: import.meta.env.VITE_COGNITO_USER_POOL_ID ?? "",
     COGNITO_REDIRECT_URI: import.meta.env.VITE_COGNITO_REDIRECT_URI ?? `${window.location.origin}/auth/callback`,

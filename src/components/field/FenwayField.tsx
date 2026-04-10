@@ -2,8 +2,10 @@ import type { FieldState } from "@/types";
 
 import { FieldPositionMarker } from "./FieldPositionMarker";
 
+const DEFAULT_FIELD_STATE: FieldState = { runners: [], outs: 0 };
+
 interface FenwayFieldProps {
-  fieldState: FieldState;
+  fieldState?: FieldState;
   className?: string;
 }
 
@@ -25,7 +27,8 @@ const RUNNER_POSITIONS: Record<string, { x: number; y: number }> = {
   third:  { x: 390, y: 520 },
 };
 
-export function FenwayField({ fieldState, className }: FenwayFieldProps) {
+export function FenwayField({ fieldState: rawFieldState, className }: FenwayFieldProps) {
+  const fieldState = rawFieldState ?? DEFAULT_FIELD_STATE;
   const ballPos = fieldState.battedBallLocation
     ? {
         x: 100 + (fieldState.battedBallLocation.x / 100) * 800,

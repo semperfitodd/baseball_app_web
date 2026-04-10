@@ -19,7 +19,7 @@ export interface Scenario {
   options: ScenarioOption[];
   difficulty: "rookie" | "veteran" | "allstar";
   category: "batting" | "baserunning" | "fielding" | "pitching" | "situational";
-  fieldState: FieldState;
+  fieldState?: FieldState;
 }
 
 export interface AnswerResult {

@@ -26,6 +26,12 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   }
 
   const response = await fetch(path, { ...options, headers });
+  const contentType = response.headers.get("content-type") ?? "";
+
+  if (!contentType.includes("application/json")) {
+    throw new ApiError(response.status, `Unexpected response (${response.status})`);
+  }
+
   const data = await response.json();
 
   if (!response.ok) {

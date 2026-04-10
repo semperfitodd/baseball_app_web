@@ -1,0 +1,16 @@
+{
+  "name": "Baseball App Intelligence",
+  "short_name": "Baseball IQ",
+  "description": "Interactive baseball scenario quizzes to sharpen your baseball IQ. Created by Todd Bernson.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#1e3a5f",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

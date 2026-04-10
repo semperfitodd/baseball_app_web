@@ -1,5 +1,6 @@
 import { useCallback, useState } from "react";
 
+import { FenwayField } from "@/components/field/FenwayField";
 import { ExplanationPanel } from "@/components/scenario/ExplanationPanel";
 import { OptionButton } from "@/components/scenario/OptionButton";
 import { ScenarioCard } from "@/components/scenario/ScenarioCard";
@@ -130,6 +131,13 @@ export function Play() {
 
       {scenario && (
         <div key={`${scenario.scenarioId}-${fetchKey}`} className="space-y-4">
+          <div className="overflow-hidden rounded-xl shadow-sm">
+            <FenwayField
+              fieldState={scenario.fieldState}
+              className="w-full"
+            />
+          </div>
+
           <ScenarioCard scenario={scenario}>
             {scenario.options.map((option) => (
               <OptionButton

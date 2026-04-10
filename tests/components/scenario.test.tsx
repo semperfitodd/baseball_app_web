@@ -21,6 +21,7 @@ const mockScenario: Scenario = {
   ],
   difficulty: "rookie",
   category: "batting",
+  fieldState: { runners: ["first"], outs: 1, highlightPlayer: "CF" },
 };
 
 describe("Scenario Components", () => {

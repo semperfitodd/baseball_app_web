@@ -3,6 +3,13 @@ export interface ScenarioOption {
   text: string;
 }
 
+export interface FieldState {
+  runners: ("first" | "second" | "third")[];
+  outs: 0 | 1 | 2;
+  battedBallLocation?: { x: number; y: number };
+  highlightPlayer?: string;
+}
+
 export interface Scenario {
   scenarioId: string;
   title: string;
@@ -12,6 +19,7 @@ export interface Scenario {
   options: ScenarioOption[];
   difficulty: "rookie" | "veteran" | "allstar";
   category: "batting" | "baserunning" | "fielding" | "pitching" | "situational";
+  fieldState: FieldState;
 }
 
 export interface AnswerResult {
